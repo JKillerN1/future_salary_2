@@ -13,25 +13,27 @@ TABLE_DATA = [
     ]
 
 
+def table_hh(language, vacancies_by_languages_hh):
+    TABLE_DATA.append([language, vacancies_by_languages_hh[language]['vacancies_found'],
+                       vacancies_by_languages_hh[language]['vacancies_processed'],
+                       vacancies_by_languages_hh[language]['average_salary']])
+
+    return TABLE_DATA
+
+
+def predict_rub_salary(vacancy):
+    if vacancy['currency'] == 'RUR':
+        if vacancy['from'] == None:
+            return int(vacancy['to'] * 0.8)
+        if vacancy['to'] == None:
+            return int(vacancy['from'] * 1.2)
+        return int((vacancy['from'] + vacancy['to']) / 2)
+
+
 def head_hunter_table(languages, TABLE_DATA):
     title_hh = 'HeadHunter Moscow'
     vacancies_by_languages_hh = {}
     url_hh = 'https://api.hh.ru/vacancies'
-
-
-    def table_hh():
-
-        TABLE_DATA.append([language, vacancies_by_languages_hh[language]['vacancies_found'], vacancies_by_languages_hh[language]['vacancies_processed'], vacancies_by_languages_hh[language]['average_salary']])
-
-        return TABLE_DATA
-
-    def predict_rub_salary(vacancy):
-        if vacancy['currency'] == 'RUR':
-            if vacancy['from'] == None:
-                return int(vacancy['to']*0.8)
-            if vacancy['to'] == None:
-                return int(vacancy['from']*1.2)
-            return int((vacancy['from'] + vacancy['to'])/2)
 
 
 
@@ -94,34 +96,33 @@ def head_hunter_table(languages, TABLE_DATA):
     #pprint(vacancies_by_languages)
 
 
-        table_instance_hh = SingleTable(table_hh(), title_hh)
+        table_instance_hh = SingleTable(table_hh(language, vacancies_by_languages_hh), title_hh)
 
     return table_instance_hh.table
+
+
+
+def table_sj(language, vacancies_by_languages_sj):
+     TABLE_DATA.append([language, vacancies_by_languages_sj[language]['vacancies_found'], vacancies_by_languages_sj[language]['vacancies_processed'], vacancies_by_languages_sj[language]['average_salary']])
+     return TABLE_DATA
+
+def predict_rub_salary_for_superJob(vacancy):
+    if vacancy['currency'] == 'rub':
+        if vacancy['payment_from'] == 0:
+            return int(vacancy['payment_to'] * 0.8)
+        if vacancy['payment_to'] == 0:
+            return int(vacancy['payment_from'] * 1.2)
+        return int((vacancy['payment_from'] + vacancy['payment_to']) / 2)
 
 def super_job_table(languages, TABLE_DATA):
     title_sj = 'SuperJob Moscow'
     vacancies_by_languages_sj = {}
-
-    def predict_rub_salary_for_superJob(vacancy):
-        if vacancy['currency'] == 'rub':
-            if vacancy['payment_from'] == 0:
-                return int(vacancy['payment_to'] * 0.8)
-            if vacancy['payment_to'] == 0:
-                return int(vacancy['payment_from'] * 1.2)
-            return int((vacancy['payment_from'] + vacancy['payment_to']) / 2)
-
 
 
     api = 'v3.r.135730693.e747e6daf76ce7b6302f4626a8eda784e6fe643d.82b2c4895662b62a11311215463b69c30479818d'
     d = {'X-Api-App-Id': api}
     url_sj = 'https://api.superjob.ru/2.0/vacancies'
 
-
-    def table_sj():
-
-        TABLE_DATA.append([language, vacancies_by_languages_sj[language]['vacancies_found'], vacancies_by_languages_sj[language]['vacancies_processed'], vacancies_by_languages_sj[language]['average_salary']])
-
-        return TABLE_DATA
 
     for language in languages:
         number_of_professions_sj = 0
@@ -152,7 +153,7 @@ def super_job_table(languages, TABLE_DATA):
                 break
 
             param_sj['page'] += 1
-        table_instance_sj = SingleTable(table_sj(), title_sj)
+        table_instance_sj = SingleTable(table_sj(language, vacancies_by_languages_sj), title_sj)
 
 
     return table_instance_sj.table
