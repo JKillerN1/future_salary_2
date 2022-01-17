@@ -1,14 +1,6 @@
 import requests
 from terminaltables import SingleTable
 
-languages = ['CSS', 'JavaScript', 'Java', 'C#', 'Ruby', 'PHP', 'C++', 'Python']
-
-TABLE_DATA_hh = [
-        ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'],
-    ]
-TABLE_DATA_sj = [
-        ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'],
-    ]
 
 def table_hh(language, vacancies_by_languages_hh):
     TABLE_DATA_hh.append([language, vacancies_by_languages_hh[language]['vacancies_found'],
@@ -86,9 +78,9 @@ def super_job_table(languages):
             response = requests.get(url_sj, headers=head, params=param_sj)
             response.raise_for_status()
             super_job = response.json()
-            for i in super_job['objects']:
-                if i['currency'] == 'rub' and i['payment_from'] != 0 or i['payment_to'] != 0:
-                    curuncy += predict_rub_salary_for_superJob(i)
+            for vacancy in super_job['objects']:
+                if vacancy['currency'] == 'rub' and vacancy['payment_from'] != 0 or vacancy['payment_to'] != 0:
+                    curuncy += predict_rub_salary_for_superJob(vacancy)
                     number_of_professions_sj += 1
                     vacancies_by_languages_sj[language] = {'vacancies_found': super_job['total'],
                                                         'average_salary': curuncy // number_of_professions_sj,
@@ -101,5 +93,13 @@ def super_job_table(languages):
     return table_instance_sj.table
 
 
-print(head_hunter_table(languages))
-print(super_job_table(languages))
+if __name__ == '__main__':
+    languages = ['CSS', 'JavaScript', 'Java', 'C#', 'Ruby', 'PHP', 'C++', 'Python']
+    TABLE_DATA_hh = [
+        ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'],
+    ]
+    TABLE_DATA_sj = [
+        ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'],
+    ]
+    print(head_hunter_table(languages))
+    print(super_job_table(languages))
