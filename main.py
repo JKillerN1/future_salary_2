@@ -87,7 +87,7 @@ def super_job_table(languages):
     vacancies_by_languages_sj = {}
 
     api = 'v3.r.135730693.e747e6daf76ce7b6302f4626a8eda784e6fe643d.82b2c4895662b62a11311215463b69c30479818d'
-    d = {'X-Api-App-Id': api}
+    head = {'X-Api-App-Id': api}
     url_sj = 'https://api.superjob.ru/2.0/vacancies'
 
     for language in languages:
@@ -96,7 +96,7 @@ def super_job_table(languages):
 
         param_sj = {'catalogues': 48, 'town': 4, 'keyword': language, 'count': 20, 'page': 0}
         while True:
-            response = requests.get(url_sj, headers=d, params=param_sj)
+            response = requests.get(url_sj, headers=head, params=param_sj)
             response.raise_for_status()
             super_job = response.json()
 
