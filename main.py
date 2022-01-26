@@ -6,11 +6,11 @@ from itertools import count
 from terminaltables import SingleTable
 
 
-def create_table(language, TABLE_DATA, vacancies_processed_by_languages, vacancies_found_by_languages, average_salary_by_languages):
-    TABLE_DATA.append([language, vacancies_found_by_languages,
+def create_table(language, table_data, vacancies_processed_by_languages, vacancies_found_by_languages, average_salary_by_languages):
+    table_data.append([language, vacancies_found_by_languages,
                        vacancies_processed_by_languages,
                        average_salary_by_languages])
-    return TABLE_DATA
+    return table_data
 
 def create_a_table(create_table, title):
     table_instance = SingleTable(create_table, title)
@@ -27,7 +27,7 @@ def predict_rub_salary(vacancy_from, vacancy_to):
 def get_statistic_for_hh(languages, title_hh):
     lang={}
     vacancies_by_languages_hh = {}
-    TABLE_DATA_hh = [
+    table_data_hh = [
         ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'],
     ]
     for language in languages:
@@ -35,8 +35,8 @@ def get_statistic_for_hh(languages, title_hh):
         vacancies_processed_by_languages_hh = lang[language]['vacancies_processed']
         vacancies_found_by_languages_hh = lang[language]['vacancies_found']
         average_salary_by_languages_hh = lang[language]['average_salary']
-        TABLE_DATA_hh = create_table(language, TABLE_DATA_hh, vacancies_processed_by_languages_hh, vacancies_found_by_languages_hh, average_salary_by_languages_hh)
-    return create_a_table(TABLE_DATA_hh, title_hh)
+        table_data_hh = create_table(language, table_data_hh, vacancies_processed_by_languages_hh, vacancies_found_by_languages_hh, average_salary_by_languages_hh)
+    return create_a_table(table_data_hh, title_hh)
 
 
 def get_statistic_of_lang_hh(language, vacancies_by_languages_hh):
@@ -69,7 +69,7 @@ def get_statistic_of_lang_hh(language, vacancies_by_languages_hh):
 def get_statistic_for_sj(languages, title_sj):
     lang_sj={}
     vacancies_by_languages_sj = {}
-    TABLE_DATA_sj = [
+    table_data_sj = [
         ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'],
     ]
     for language in languages:
@@ -77,8 +77,8 @@ def get_statistic_for_sj(languages, title_sj):
         vacancies_processed_by_languages_sj = lang_sj[language]['vacancies_processed']
         vacancies_found_by_languages_sj = lang_sj[language]['vacancies_found']
         average_salary_by_languages_sj = lang_sj[language]['average_salary']
-        TABLE_DATA_sj = create_table(language, TABLE_DATA_sj, vacancies_processed_by_languages_sj, vacancies_found_by_languages_sj, average_salary_by_languages_sj)
-    return create_a_table(TABLE_DATA_sj, title_sj)
+        table_data_sj = create_table(language, table_data_sj, vacancies_processed_by_languages_sj, vacancies_found_by_languages_sj, average_salary_by_languages_sj)
+    return create_a_table(table_data_sj, title_sj)
 
 
 def get_statistic_of_lang_sj(language, vacancies_by_languages_sj):
