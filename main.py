@@ -12,6 +12,10 @@ def create_table(language, TABLE_DATA, vacancies_processed_by_languages, vacanci
                        average_salary_by_languages])
     return TABLE_DATA
 
+def create_a_table(create_table, title):
+    table_instance = SingleTable(create_table, title)
+    return table_instance.table
+
 def predict_rub_salary(vacancy_from, vacancy_to):
     if vacancy_from is None:
         return int(vacancy_to * 0.8)
@@ -20,13 +24,7 @@ def predict_rub_salary(vacancy_from, vacancy_to):
     return int((vacancy_from + vacancy_to) / 2)
 
 
-def create_a_table_for_head_hunter(creat_table_hh):
-    title_hh = 'HeadHunter Moscow'
-    table_instance_hh = SingleTable(creat_table_hh, title_hh)
-    return table_instance_hh.table
-
-
-def get_statistic_for_hh(languages):
+def get_statistic_for_hh(languages, title_hh):
     lang={}
     vacancies_by_languages_hh = {}
     TABLE_DATA_hh = [
@@ -38,7 +36,7 @@ def get_statistic_for_hh(languages):
         vacancies_found_by_languages_hh = lang[language]['vacancies_found']
         average_salary_by_languages_hh = lang[language]['average_salary']
         TABLE_DATA_hh = create_table(language, TABLE_DATA_hh, vacancies_processed_by_languages_hh, vacancies_found_by_languages_hh, average_salary_by_languages_hh)
-    return create_a_table_for_head_hunter(TABLE_DATA_hh)
+    return create_a_table(TABLE_DATA_hh, title_hh)
 
 
 def get_statistic_of_lang_hh(language, vacancies_by_languages_hh):
@@ -68,13 +66,7 @@ def get_statistic_of_lang_hh(language, vacancies_by_languages_hh):
     return vacancies_by_languages_hh[language]
 
 
-def create_a_table_for_superJob(create_table_sj):
-    title_sj = 'SuperJob Moscow'
-    table_instance_sj = SingleTable(create_table_sj, title_sj)
-    return table_instance_sj.table
-
-
-def get_statistic_for_sj(languages):
+def get_statistic_for_sj(languages, title_sj):
     lang_sj={}
     vacancies_by_languages_sj = {}
     TABLE_DATA_sj = [
@@ -86,8 +78,7 @@ def get_statistic_for_sj(languages):
         vacancies_found_by_languages_sj = lang_sj[language]['vacancies_found']
         average_salary_by_languages_sj = lang_sj[language]['average_salary']
         TABLE_DATA_sj = create_table(language, TABLE_DATA_sj, vacancies_processed_by_languages_sj, vacancies_found_by_languages_sj, average_salary_by_languages_sj)
-    return create_a_table_for_superJob(TABLE_DATA_sj)
-
+    return create_a_table(TABLE_DATA_sj, title_sj)
 
 
 def get_statistic_of_lang_sj(language, vacancies_by_languages_sj):
@@ -119,6 +110,8 @@ def get_statistic_of_lang_sj(language, vacancies_by_languages_sj):
 
 
 if __name__ == '__main__':
+    title_hh = 'HeadHunter Moscow'
+    title_sj = 'SuperJob Moscow'
     languages = ['CSS', 'JavaScript', 'Java', 'C#', 'Ruby', 'PHP', 'C++', 'Python']
-    print(get_statistic_for_hh(languages))
-    print(get_statistic_for_sj(languages))
+    print(get_statistic_for_hh(languages, title_hh))
+    print(get_statistic_for_sj(languages, title_sj))
