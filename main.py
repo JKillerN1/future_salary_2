@@ -6,7 +6,7 @@ from itertools import count
 from terminaltables import SingleTable
 
 
-def create_table(language, table_data, vacancies_processed_by_languages, vacancies_found_by_languages, average_salary_by_languages):
+def collect_table(language, table_data, vacancies_processed_by_languages, vacancies_found_by_languages, average_salary_by_languages):
     table_data.append([language, vacancies_found_by_languages,
                        vacancies_processed_by_languages,
                        average_salary_by_languages])
@@ -35,7 +35,7 @@ def get_statistic_for_hh(languages, title_hh):
         vacancies_processed_by_languages_hh = lang[language]['vacancies_processed']
         vacancies_found_by_languages_hh = lang[language]['vacancies_found']
         average_salary_by_languages_hh = lang[language]['average_salary']
-        table_data_hh = create_table(language, table_data_hh, vacancies_processed_by_languages_hh, vacancies_found_by_languages_hh, average_salary_by_languages_hh)
+        table_data_hh = collect_table(language, table_data_hh, vacancies_processed_by_languages_hh, vacancies_found_by_languages_hh, average_salary_by_languages_hh)
     return create_a_table(table_data_hh, title_hh)
 
 
@@ -77,7 +77,7 @@ def get_statistic_for_sj(languages, title_sj):
         vacancies_processed_by_languages_sj = lang_sj[language]['vacancies_processed']
         vacancies_found_by_languages_sj = lang_sj[language]['vacancies_found']
         average_salary_by_languages_sj = lang_sj[language]['average_salary']
-        table_data_sj = create_table(language, table_data_sj, vacancies_processed_by_languages_sj, vacancies_found_by_languages_sj, average_salary_by_languages_sj)
+        table_data_sj = collect_table(language, table_data_sj, vacancies_processed_by_languages_sj, vacancies_found_by_languages_sj, average_salary_by_languages_sj)
     return create_a_table(table_data_sj, title_sj)
 
 
