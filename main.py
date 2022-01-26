@@ -83,8 +83,8 @@ def get_statistic_for_sj(languages, title_sj):
 
 def get_statistic_of_lang_sj(language, vacancies_by_languages_sj):
     load_dotenv()
-    api_token = os.getenv('API_TOKEN')
-    headers = {'X-Api-App-Id': api_token}
+    sj_token = os.getenv('SUPERJOB_TOKEN')
+    headers = {'X-Api-App-Id': sj_token}
     sj_url = 'https://api.superjob.ru/2.0/vacancies'
     professions_sj_number = 0
     curuncy = 0
