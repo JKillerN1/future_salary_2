@@ -17,9 +17,9 @@ def create_a_table(create_table, title):
     return table_instance.table
 
 def predict_rub_salary(vacancy_from, vacancy_to):
-    if vacancy_from is None:
+    if not vacancy_from:
         return int(vacancy_to * 0.8)
-    if vacancy_to is None:
+    if not vacancy_to:
         return int(vacancy_from * 1.2)
     return int((vacancy_from + vacancy_to) / 2)
 
