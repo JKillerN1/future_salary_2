@@ -6,15 +6,18 @@ from itertools import count
 from terminaltables import SingleTable
 
 
-def collect_table(language, table_data, vacancies_processed_by_languages, vacancies_found_by_languages, average_salary_by_languages):
-    table_data.append([language, vacancies_found_by_languages,
-                       vacancies_processed_by_languages,
-                       average_salary_by_languages])
+def collect_table(language, table_data, vacancies_by_languages):
+    table_data.append([language,
+                       vacancies_by_languages[language]['vacancies_found'],
+                       vacancies_by_languages[language]['vacancies_processed'],
+                       vacancies_by_languages[language]['average_salary']])
     return table_data
+
 
 def create_a_table(create_table, title):
     table_instance = SingleTable(create_table, title)
     return table_instance.table
+
 
 def predict_rub_salary(vacancy_from, vacancy_to):
     if not vacancy_from:
@@ -25,17 +28,22 @@ def predict_rub_salary(vacancy_from, vacancy_to):
 
 
 def get_statistic_for_hh(languages, title_hh):
-    lang={}
+    lang = {}
     vacancies_by_languages_hh = {}
     table_data_hh = [
-        ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'],
+        ['Язык программирования',
+         'Вакансий найдено',
+         'Вакансий обработано',
+         'Средняя зарплата'],
     ]
     for language in languages:
-        lang[language] = get_statistic_of_lang_hh(language, vacancies_by_languages_hh)
-        vacancies_processed_by_languages_hh = lang[language]['vacancies_processed']
-        vacancies_found_by_languages_hh = lang[language]['vacancies_found']
-        average_salary_by_languages_hh = lang[language]['average_salary']
-        table_data_hh = collect_table(language, table_data_hh, vacancies_processed_by_languages_hh, vacancies_found_by_languages_hh, average_salary_by_languages_hh)
+        lang[language] = get_statistic_of_lang_hh(
+            language,
+            vacancies_by_languages_hh)
+        table_data_hh = collect_table(
+            language,
+            table_data_hh,
+            vacancies_by_languages_hh)
     return create_a_table(table_data_hh, title_hh)
 
 
@@ -43,7 +51,10 @@ def get_statistic_of_lang_hh(language, vacancies_by_languages_hh):
     url_hh = 'https://api.hh.ru/vacancies'
     number_of_professions = 0
     average_salary = 0
-    param = {'specialization': '1.221', 'area': '1', 'text': language, 'per_page': 100}
+    param = {'specialization': '1.221',
+             'area': '1',
+             'text': language,
+             'per_page': 100}
     response = requests.get(url_hh, params=param)
     response.raise_for_status()
     proggramer_vacancies_by_language = response.json()
@@ -57,7 +68,9 @@ def get_statistic_of_lang_hh(language, vacancies_by_languages_hh):
             if salary_vacancy:
                 if salary_vacancy['currency'] != 'RUR':
                     continue
-                average_salary += predict_rub_salary(salary_vacancy['from'], salary_vacancy['to'])
+                average_salary += predict_rub_salary(
+                    salary_vacancy['from'],
+                    salary_vacancy['to'])
                 number_of_professions += 1
     vacancies_by_languages_hh[language] = {
         'vacancies_found': proggramer_vacancies_by_language['found'],
@@ -67,17 +80,23 @@ def get_statistic_of_lang_hh(language, vacancies_by_languages_hh):
 
 
 def get_statistic_for_sj(languages, title_sj, sj_token):
-    lang_sj={}
+    lang_sj = {}
     vacancies_by_languages_sj = {}
     table_data_sj = [
-        ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'],
+        ['Язык программирования',
+         'Вакансий найдено',
+         'Вакансий обработано',
+         'Средняя зарплата'],
     ]
     for language in languages:
-        lang_sj[language] = get_statistic_of_lang_sj(language, vacancies_by_languages_sj, sj_token)
-        vacancies_processed_by_languages_sj = lang_sj[language]['vacancies_processed']
-        vacancies_found_by_languages_sj = lang_sj[language]['vacancies_found']
-        average_salary_by_languages_sj = lang_sj[language]['average_salary']
-        table_data_sj = collect_table(language, table_data_sj, vacancies_processed_by_languages_sj, vacancies_found_by_languages_sj, average_salary_by_languages_sj)
+        lang_sj[language] = get_statistic_of_lang_sj(
+            language,
+            vacancies_by_languages_sj,
+            sj_token)
+        table_data_sj = collect_table(
+            language,
+            table_data_sj,
+            vacancies_by_languages_sj)
     return create_a_table(table_data_sj, title_sj)
 
 
@@ -86,16 +105,23 @@ def get_statistic_of_lang_sj(language, vacancies_by_languages_sj, sj_token):
     sj_url = 'https://api.superjob.ru/2.0/vacancies'
     professions_sj_number = 0
     curuncy = 0
-    sj_param = {'catalogues': 48, 'town': 4, 'keyword': language, 'count': 20, 'page': 0}
+    sj_param = {'catalogues': 48,
+                'town': 4,
+                'keyword': language,
+                'count': 20,
+                'page': 0}
     iter_count = count(start=0, step=10)
     for number in iter_count:
         response = requests.get(sj_url, headers=headers, params=sj_param)
         response.raise_for_status()
         super_job = response.json()
         for vacancy in super_job['objects']:
-           if vacancy['currency'] == 'rub' and vacancy['payment_from'] or vacancy['payment_to']:
-                curuncy += predict_rub_salary(vacancy['payment_from'], vacancy['payment_to'])
-                professions_sj_number += 1
+            if vacancy['currency'] == 'rub':
+                if vacancy['payment_from'] or vacancy['payment_to']:
+                    curuncy += predict_rub_salary(
+                        vacancy['payment_from'],
+                        vacancy['payment_to'])
+                    professions_sj_number += 1
         if not super_job['more']:
             break
         sj_param['page'] += 1
@@ -112,6 +138,13 @@ if __name__ == '__main__':
     sj_token = os.getenv('SUPERJOB_TOKEN')
     title_hh = 'HeadHunter Moscow'
     title_sj = 'SuperJob Moscow'
-    languages = ['CSS', 'JavaScript', 'Java', 'C#', 'Ruby', 'PHP', 'C++', 'Python']
+    languages = ['CSS',
+                 'JavaScript',
+                 'Java',
+                 'C#',
+                 'Ruby',
+                 'PHP',
+                 'C++',
+                 'Python']
     print(get_statistic_for_hh(languages, title_hh))
     print(get_statistic_for_sj(languages, title_sj, sj_token))
