@@ -88,26 +88,26 @@ def get_statistic_of_lang_sj(language, vacancies_by_languages_sj):
     load_dotenv()
     api_token = os.getenv('API_TOKEN')
     headers = {'X-Api-App-Id': api_token}
-    url_sj = 'https://api.superjob.ru/2.0/vacancies'
-    number_of_professions_sj = 0
+    sj_url = 'https://api.superjob.ru/2.0/vacancies'
+    professions_sj_number = 0
     curuncy = 0
-    param_sj = {'catalogues': 48, 'town': 4, 'keyword': language, 'count': 20, 'page': 0}
+    sj_param = {'catalogues': 48, 'town': 4, 'keyword': language, 'count': 20, 'page': 0}
     iter_count = count(start=0, step=10)
     for number in iter_count:
-        response = requests.get(url_sj, headers=headers, params=param_sj)
+        response = requests.get(sj_url, headers=headers, params=sj_param)
         response.raise_for_status()
         super_job = response.json()
         for vacancy in super_job['objects']:
            if vacancy['currency'] == 'rub' and vacancy['payment_from'] or vacancy['payment_to']:
                 curuncy += predict_rub_salary(vacancy['payment_from'], vacancy['payment_to'])
-                number_of_professions_sj += 1
+                professions_sj_number += 1
         if super_job['more'] is False:
             break
-        param_sj['page'] += 1
+        sj_param['page'] += 1
     vacancies_by_languages_sj[language] = {
         'vacancies_found': super_job['total'],
-        'average_salary': curuncy // number_of_professions_sj,
-        'vacancies_processed': number_of_professions_sj}
+        'average_salary': curuncy // professions_sj_number,
+        'vacancies_processed': professions_sj_number}
 
     return vacancies_by_languages_sj[language]
 
