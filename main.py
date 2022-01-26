@@ -6,7 +6,7 @@ from itertools import count
 from terminaltables import SingleTable
 
 
-def table(language, vacancies_by_languages_hh, TABLE_DATA):
+def create_table(language, vacancies_by_languages_hh, TABLE_DATA):
     TABLE_DATA.append([language, vacancies_by_languages_hh[language]['vacancies_found'],
                        vacancies_by_languages_hh[language]['vacancies_processed'],
                        vacancies_by_languages_hh[language]['average_salary']])
@@ -20,7 +20,7 @@ def predict_rub_salary(vacancy_from, vacancy_to):
     return int((vacancy_from + vacancy_to) / 2)
 
 
-def creating_a_table_for_head_hunter(creat_table_hh):
+def create_a_table_for_head_hunter(creat_table_hh):
     title_hh = 'HeadHunter Moscow'
     table_instance_hh = SingleTable(creat_table_hh, title_hh)
     return table_instance_hh.table
@@ -34,8 +34,8 @@ def get_statistic_for_hh(languages):
     ]
     for language in languages:
         lang[language] = get_statistic_of_lang_hh(language, vacancies_by_languages_hh)
-        TABLE_DATA_hh = table(language, lang, TABLE_DATA_hh)
-    return creating_a_table_for_head_hunter(TABLE_DATA_hh)
+        TABLE_DATA_hh = create_table(language, lang, TABLE_DATA_hh)
+    return create_a_table_for_head_hunter(TABLE_DATA_hh)
 
 
 def get_statistic_of_lang_hh(language, vacancies_by_languages_hh):
@@ -65,9 +65,9 @@ def get_statistic_of_lang_hh(language, vacancies_by_languages_hh):
     return vacancies_by_languages_hh[language]
 
 
-def creating_a_table_for_superJob(creat_table_sj):
+def create_a_table_for_superJob(create_table_sj):
     title_sj = 'SuperJob Moscow'
-    table_instance_sj = SingleTable(creat_table_sj, title_sj)
+    table_instance_sj = SingleTable(create_table_sj, title_sj)
     return table_instance_sj.table
 
 
@@ -79,8 +79,8 @@ def get_statistic_for_sj(languages):
     ]
     for language in languages:
         lang_sj[language] = get_statistic_of_lang_sj(language, vacancies_by_languages_sj)
-        TABLE_DATA_sj = table(language, lang_sj, TABLE_DATA_sj)
-    return creating_a_table_for_superJob(TABLE_DATA_sj)
+        TABLE_DATA_sj = create_table(language, lang_sj, TABLE_DATA_sj)
+    return create_a_table_for_superJob(TABLE_DATA_sj)
 
 
 
