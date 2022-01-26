@@ -86,15 +86,15 @@ def get_statistic_for_sj(languages):
 
 def get_statistic_of_lang_sj(language, vacancies_by_languages_sj):
     load_dotenv()
-    api = os.getenv('API_TOKEN')
-    head = {'X-Api-App-Id': api}
+    api_token = os.getenv('API_TOKEN')
+    headers = {'X-Api-App-Id': api_token}
     url_sj = 'https://api.superjob.ru/2.0/vacancies'
     number_of_professions_sj = 0
     curuncy = 0
     param_sj = {'catalogues': 48, 'town': 4, 'keyword': language, 'count': 20, 'page': 0}
     iter_count = count(start=0, step=10)
-    for i_c in iter_count:
-        response = requests.get(url_sj, headers=head, params=param_sj)
+    for number in iter_count:
+        response = requests.get(url_sj, headers=headers, params=param_sj)
         response.raise_for_status()
         super_job = response.json()
         for vacancy in super_job['objects']:
