@@ -66,14 +66,14 @@ def get_statistic_of_lang_hh(language, vacancies_by_languages_hh):
     return vacancies_by_languages_hh[language]
 
 
-def get_statistic_for_sj(languages, title_sj):
+def get_statistic_for_sj(languages, title_sj, sj_token):
     lang_sj={}
     vacancies_by_languages_sj = {}
     table_data_sj = [
         ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата'],
     ]
     for language in languages:
-        lang_sj[language] = get_statistic_of_lang_sj(language, vacancies_by_languages_sj)
+        lang_sj[language] = get_statistic_of_lang_sj(language, vacancies_by_languages_sj, sj_token)
         vacancies_processed_by_languages_sj = lang_sj[language]['vacancies_processed']
         vacancies_found_by_languages_sj = lang_sj[language]['vacancies_found']
         average_salary_by_languages_sj = lang_sj[language]['average_salary']
@@ -81,9 +81,7 @@ def get_statistic_for_sj(languages, title_sj):
     return create_a_table(table_data_sj, title_sj)
 
 
-def get_statistic_of_lang_sj(language, vacancies_by_languages_sj):
-    load_dotenv()
-    sj_token = os.getenv('SUPERJOB_TOKEN')
+def get_statistic_of_lang_sj(language, vacancies_by_languages_sj, sj_token):
     headers = {'X-Api-App-Id': sj_token}
     sj_url = 'https://api.superjob.ru/2.0/vacancies'
     professions_sj_number = 0
@@ -110,8 +108,10 @@ def get_statistic_of_lang_sj(language, vacancies_by_languages_sj):
 
 
 if __name__ == '__main__':
+    load_dotenv()
+    sj_token = os.getenv('SUPERJOB_TOKEN')
     title_hh = 'HeadHunter Moscow'
     title_sj = 'SuperJob Moscow'
     languages = ['CSS', 'JavaScript', 'Java', 'C#', 'Ruby', 'PHP', 'C++', 'Python']
     print(get_statistic_for_hh(languages, title_hh))
-    print(get_statistic_for_sj(languages, title_sj))
+    print(get_statistic_for_sj(languages, title_sj, sj_token))
