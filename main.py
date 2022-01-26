@@ -98,7 +98,7 @@ def get_statistic_of_lang_sj(language, vacancies_by_languages_sj):
            if vacancy['currency'] == 'rub' and vacancy['payment_from'] or vacancy['payment_to']:
                 curuncy += predict_rub_salary(vacancy['payment_from'], vacancy['payment_to'])
                 professions_sj_number += 1
-        if super_job['more'] is False:
+        if not super_job['more']:
             break
         sj_param['page'] += 1
     vacancies_by_languages_sj[language] = {
