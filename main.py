@@ -6,10 +6,10 @@ from itertools import count
 from terminaltables import SingleTable
 
 
-def create_table(language, vacancies_by_languages_hh, TABLE_DATA):
-    TABLE_DATA.append([language, vacancies_by_languages_hh[language]['vacancies_found'],
-                       vacancies_by_languages_hh[language]['vacancies_processed'],
-                       vacancies_by_languages_hh[language]['average_salary']])
+def create_table(language, TABLE_DATA, vacancies_processed_by_languages, vacancies_found_by_languages, average_salary_by_languages):
+    TABLE_DATA.append([language, vacancies_found_by_languages,
+                       vacancies_processed_by_languages,
+                       average_salary_by_languages])
     return TABLE_DATA
 
 def predict_rub_salary(vacancy_from, vacancy_to):
@@ -34,7 +34,10 @@ def get_statistic_for_hh(languages):
     ]
     for language in languages:
         lang[language] = get_statistic_of_lang_hh(language, vacancies_by_languages_hh)
-        TABLE_DATA_hh = create_table(language, lang, TABLE_DATA_hh)
+        vacancies_processed_by_languages_hh = lang[language]['vacancies_processed']
+        vacancies_found_by_languages_hh = lang[language]['vacancies_found']
+        average_salary_by_languages_hh = lang[language]['average_salary']
+        TABLE_DATA_hh = create_table(language, TABLE_DATA_hh, vacancies_processed_by_languages_hh, vacancies_found_by_languages_hh, average_salary_by_languages_hh)
     return create_a_table_for_head_hunter(TABLE_DATA_hh)
 
 
@@ -79,7 +82,10 @@ def get_statistic_for_sj(languages):
     ]
     for language in languages:
         lang_sj[language] = get_statistic_of_lang_sj(language, vacancies_by_languages_sj)
-        TABLE_DATA_sj = create_table(language, lang_sj, TABLE_DATA_sj)
+        vacancies_processed_by_languages_sj = lang_sj[language]['vacancies_processed']
+        vacancies_found_by_languages_sj = lang_sj[language]['vacancies_found']
+        average_salary_by_languages_sj = lang_sj[language]['average_salary']
+        TABLE_DATA_sj = create_table(language, TABLE_DATA_sj, vacancies_processed_by_languages_sj, vacancies_found_by_languages_sj, average_salary_by_languages_sj)
     return create_a_table_for_superJob(TABLE_DATA_sj)
 
 
