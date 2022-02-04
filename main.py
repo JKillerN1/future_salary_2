@@ -1,5 +1,6 @@
 import os
 import requests
+import copy
 
 from dotenv import load_dotenv
 from itertools import count
@@ -7,16 +8,14 @@ from terminaltables import SingleTable
 
 
 def collect_table(language, table, vacancies_by_languages):
-    table.append([language,
-                       vacancies_by_languages[language]['vacancies_found'],
-                       vacancies_by_languages[language]['vacancies_processed'],
-                       vacancies_by_languages[language]['average_salary']])
-    return table
-
-
-def create_a_table(creating_table, title):
-    table_instance = SingleTable(creating_table, title)
-    return table_instance.table
+    table_copy = copy.copy(table)
+    if language in vacancies_by_languages:
+        table_copy.append([
+            language,
+            vacancies_by_languages[language]['vacancies_found'],
+            vacancies_by_languages[language]['vacancies_processed'],
+            vacancies_by_languages[language]['average_salary']])
+    return table_copy
 
 
 def predict_rub_salary(vacancy_from, vacancy_to):
@@ -44,7 +43,9 @@ def get_statistic_for_hh(languages, hh_title):
             language,
             hh_table,
             hh_vacancies_by_languages)
-    return create_a_table(hh_table, hh_title)
+
+    table_instance = SingleTable(hh_table, hh_title)
+    return table_instance.table
 
 
 def get_statistic_of_lang_hh(language, hh_vacancies_by_languages):
@@ -65,18 +66,19 @@ def get_statistic_of_lang_hh(language, hh_vacancies_by_languages):
         vacancies_by_page = page_response.json()
         for vacancy in vacancies_by_page['items']:
             salary_vacancy = vacancy['salary']
-            if salary_vacancy:
-                if salary_vacancy['currency'] != 'RUR':
-                    continue
-                average_salary += predict_rub_salary(
-                    salary_vacancy['from'],
-                    salary_vacancy['to'])
-                number_of_professions += 1
-    hh_vacancies_by_languages[language] = {
-        'vacancies_found': proggramer_vacancies_by_language['found'],
-        'average_salary': average_salary // number_of_professions,
-        'vacancies_processed': number_of_professions}
-    return hh_vacancies_by_languages[language]
+            if not salary_vacancy or salary_vacancy['currency'] != 'RUR':
+                continue
+            average_salary += predict_rub_salary(
+                salary_vacancy['from'],
+                salary_vacancy['to'])
+            number_of_professions += 1
+
+    if number_of_professions != 0:
+        hh_vacancies_by_languages[language] = {
+            'vacancies_found': proggramer_vacancies_by_language['found'],
+            'average_salary': average_salary // number_of_professions,
+            'vacancies_processed': number_of_professions}
+        return hh_vacancies_by_languages[language]
 
 
 def get_statistic_for_sj(languages, sj_title, sj_token):
@@ -97,7 +99,8 @@ def get_statistic_for_sj(languages, sj_title, sj_token):
             language,
             sj_table,
             sj_vacancies_by_languages)
-    return create_a_table(sj_table, sj_title)
+    table_instance = SingleTable(sj_table, sj_title)
+    return table_instance.table
 
 
 def get_statistic_of_lang_sj(language, sj_vacancies_by_languages, sj_token):
@@ -115,22 +118,24 @@ def get_statistic_of_lang_sj(language, sj_vacancies_by_languages, sj_token):
         response = requests.get(sj_url, headers=headers, params=sj_param)
         response.raise_for_status()
         super_job = response.json()
-        for vacancy in super_job['objects']:
-            if vacancy['currency'] == 'rub':
-                if vacancy['payment_from'] or vacancy['payment_to']:
-                    curuncy += predict_rub_salary(
-                        vacancy['payment_from'],
-                        vacancy['payment_to'])
-                    professions_sj_number += 1
-        if not super_job['more']:
-            break
-        sj_param['page'] += 1
-    sj_vacancies_by_languages[language] = {
-        'vacancies_found': super_job['total'],
-        'average_salary': curuncy // professions_sj_number,
-        'vacancies_processed': professions_sj_number}
-
-    return sj_vacancies_by_languages[language]
+        if super_job['objects']:
+            for vacancy in super_job['objects']:
+                if vacancy['currency'] == 'rub':
+                    if vacancy['payment_from'] or vacancy['payment_to']:
+                        curuncy += predict_rub_salary(
+                            vacancy['payment_from'],
+                            vacancy['payment_to'])
+                        professions_sj_number += 1
+            if not super_job['more']:
+                break
+            sj_param['page'] += 1
+        if professions_sj_number:
+            sj_vacancies_by_languages[language] = {
+                'vacancies_found': super_job['total'],
+                'average_salary': curuncy // professions_sj_number,
+                'vacancies_processed': professions_sj_number
+            }
+            return sj_vacancies_by_languages[language]
 
 
 if __name__ == '__main__':
