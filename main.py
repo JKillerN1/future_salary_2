@@ -26,7 +26,7 @@ def predict_rub_salary(vacancy_from, vacancy_to):
     return int((vacancy_from + vacancy_to) / 2)
 
 
-def get_statistic_for_hh(languages, hh_title):
+def get_table_hh(languages, hh_title):
     lang = {}
     hh_vacancies_by_languages = {}
     hh_table = [
@@ -81,7 +81,7 @@ def get_statistic_of_lang_hh(language, hh_vacancies_by_languages):
         return hh_vacancies_by_languages[language]
 
 
-def get_statistic_for_sj(languages, sj_title, sj_token):
+def get_table_sj(languages, sj_title, sj_token):
     sj_lang = {}
     sj_vacancies_by_languages = {}
     sj_table = [
@@ -151,5 +151,5 @@ if __name__ == '__main__':
                  'PHP',
                  'C++',
                  'Python']
-    print(get_statistic_for_hh(languages, hh_title))
-    print(get_statistic_for_sj(languages, sj_title, sj_token))
+    print(get_table_hh(languages, hh_title))
+    print(get_table_sj(languages, sj_title, sj_token))
