@@ -26,7 +26,7 @@ def predict_rub_salary(vacancy_from, vacancy_to):
     return int((vacancy_from + vacancy_to) / 2)
 
 
-def get_table_hh(languages, hh_title):
+def get_hh_table(languages, hh_title):
     lang = {}
     hh_vacancies_by_languages = {}
     hh_table = [
@@ -36,7 +36,7 @@ def get_table_hh(languages, hh_title):
          'Средняя зарплата'],
     ]
     for language in languages:
-        lang[language] = get_statistic_of_lang_hh(
+        lang[language] = get_hh_statistic_of_lang(
             language,
             hh_vacancies_by_languages)
         hh_table = collect_table(
@@ -48,7 +48,7 @@ def get_table_hh(languages, hh_title):
     return table_instance.table
 
 
-def get_statistic_of_lang_hh(language, hh_vacancies_by_languages):
+def get_hh_statistic_of_lang(language, hh_vacancies_by_languages):
     hh_url = 'https://api.hh.ru/vacancies'
     number_of_professions = 0
     average_salary = 0
@@ -81,7 +81,7 @@ def get_statistic_of_lang_hh(language, hh_vacancies_by_languages):
         return hh_vacancies_by_languages[language]
 
 
-def get_table_sj(languages, sj_title, sj_token):
+def get_sj_table(languages, sj_title, sj_token):
     sj_lang = {}
     sj_vacancies_by_languages = {}
     sj_table = [
@@ -91,7 +91,7 @@ def get_table_sj(languages, sj_title, sj_token):
          'Средняя зарплата'],
     ]
     for language in languages:
-        sj_lang[language] = get_statistic_of_lang_sj(
+        sj_lang[language] = get_sj_statistic_of_lang(
             language,
             sj_vacancies_by_languages,
             sj_token)
@@ -103,7 +103,7 @@ def get_table_sj(languages, sj_title, sj_token):
     return table_instance.table
 
 
-def get_statistic_of_lang_sj(language, sj_vacancies_by_languages, sj_token):
+def get_sj_statistic_of_lang(language, sj_vacancies_by_languages, sj_token):
     headers = {'X-Api-App-Id': sj_token}
     sj_url = 'https://api.superjob.ru/2.0/vacancies'
     professions_sj_number = 0
@@ -151,5 +151,5 @@ if __name__ == '__main__':
                  'PHP',
                  'C++',
                  'Python']
-    print(get_table_hh(languages, hh_title))
-    print(get_table_sj(languages, sj_title, sj_token))
+    print(get_hh_table(languages, hh_title))
+    print(get_sj_table(languages, sj_title, sj_token))
