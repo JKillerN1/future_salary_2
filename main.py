@@ -26,14 +26,15 @@ def predict_rub_salary(vacancy_from, vacancy_to):
     return int((vacancy_from + vacancy_to) / 2)
 
 
-def get_hh_table(languages, hh_title):
+'''def get_hh_table(languages, hh_title):
     lang = {}
-
     hh_table = [
-        ['Язык программирования',
-         'Вакансий найдено',
-         'Вакансий обработано',
-         'Средняя зарплата'],
+        [
+            'Язык программирования',
+            'Вакансий найдено',
+            'Вакансий обработано',
+            'Средняя зарплата'
+        ],
     ]
     for language in languages:
         lang[language] = get_hh_statistic_of_lang(language)
@@ -42,7 +43,37 @@ def get_hh_table(languages, hh_title):
             hh_table,
             lang)
     table_instance = SingleTable(hh_table, hh_title)
+    return table_instance.table'''
+
+def get_table(languages, title, lang):
+    table = [
+        ['Язык программирования',
+         'Вакансий найдено',
+         'Вакансий обработано',
+         'Средняя зарплата'],
+    ]
+    for language in languages:
+        table = collect_table(
+            language,
+            table,
+            lang)
+    table_instance = SingleTable(table, title)
     return table_instance.table
+
+def get_hh_statistic(languages):
+    lang = {}
+    for language in languages:
+        lang[language] = get_hh_statistic_of_lang(
+            language)
+    return lang
+
+
+def get_sj_statistic(languages, token):
+    lang = {}
+    for language in languages:
+        lang[language] = get_sj_statistic_of_lang(
+            language, token)
+    return lang
 
 
 def get_hh_statistic_of_lang(language):
@@ -70,7 +101,6 @@ def get_hh_statistic_of_lang(language):
                 salary_vacancy['from'],
                 salary_vacancy['to'])
             number_of_professions += 1
-
     if number_of_professions != 0:
         hh_vacancies_by_languages[language] = {
             'vacancies_found': programmer_vacancies_by_language['found'],
@@ -79,7 +109,7 @@ def get_hh_statistic_of_lang(language):
         return hh_vacancies_by_languages[language]
 
 
-def get_sj_table(languages, sj_title, sj_token):
+'''def get_sj_table(languages, sj_title, sj_token):
     sj_lang = {}
     sj_table = [
         ['Язык программирования',
@@ -96,7 +126,7 @@ def get_sj_table(languages, sj_title, sj_token):
             sj_table,
             sj_lang)
     table_instance = SingleTable(sj_table, sj_title)
-    return table_instance.table
+    return table_instance.table'''
 
 
 def get_sj_statistic_of_lang(language, sj_token):
@@ -149,5 +179,5 @@ if __name__ == '__main__':
                  'PHP',
                  'C++',
                  'Python']'''
-    print(get_hh_table(languages, hh_title))
-    print(get_sj_table(languages, sj_title, sj_token))
+    print(get_table(languages, hh_title, get_hh_statistic(languages)))
+    print(get_table(languages, sj_title, get_sj_statistic(languages, sj_token)))
