@@ -26,25 +26,6 @@ def predict_rub_salary(vacancy_from, vacancy_to):
     return int((vacancy_from + vacancy_to) / 2)
 
 
-'''def get_hh_table(languages, hh_title):
-    lang = {}
-    hh_table = [
-        [
-            'Язык программирования',
-            'Вакансий найдено',
-            'Вакансий обработано',
-            'Средняя зарплата'
-        ],
-    ]
-    for language in languages:
-        lang[language] = get_hh_statistic_of_lang(language)
-        hh_table = collect_table(
-            language,
-            hh_table,
-            lang)
-    table_instance = SingleTable(hh_table, hh_title)
-    return table_instance.table'''
-
 def get_table(languages, title, lang):
     table = [
         ['Язык программирования',
@@ -59,6 +40,7 @@ def get_table(languages, title, lang):
             lang)
     table_instance = SingleTable(table, title)
     return table_instance.table
+
 
 def get_hh_statistic(languages):
     lang = {}
@@ -76,23 +58,33 @@ def get_sj_statistic(languages, token):
     return lang
 
 
-def get_hh_statistic_of_lang(language):
-    hh_vacancies_by_languages = {}
+def get_vacancies_statistic(vacancies_by_language, average_salary, vacancies_count):
+    hh_vacancies_by_languages = {
+        'vacancies_found': vacancies_by_language,
+        'average_salary': average_salary,
+        'vacancies_processed': vacancies_count}
+    return hh_vacancies_by_languages
+
+
+def get_hh_vacancies(language, page=0):
     hh_url = 'https://api.hh.ru/vacancies'
-    number_of_professions = 0
-    average_salary = 0
     param = {'specialization': '1.221',
              'area': '1',
              'text': language,
-             'per_page': 100}
+             'per_page': 100,
+             'page': page}
     response = requests.get(hh_url, params=param)
     response.raise_for_status()
     programmer_vacancies_by_language = response.json()
-    for page in range(programmer_vacancies_by_language['pages']):
-        param['page'] = page
-        page_response = requests.get(hh_url, params=param)
-        page_response.raise_for_status()
-        vacancies_by_page = page_response.json()
+    return programmer_vacancies_by_language
+
+
+def get_hh_statistic_of_lang(language):
+    number_of_professions = 0
+    average_salary = 0
+    hh_vacancies = get_hh_vacancies(language)
+    for page in range(hh_vacancies['pages']):
+        vacancies_by_page = get_hh_vacancies(language, page)
         for vacancy in vacancies_by_page['items']:
             salary_vacancy = vacancy['salary']
             if not salary_vacancy or salary_vacancy['currency'] != 'RUR':
@@ -102,67 +94,53 @@ def get_hh_statistic_of_lang(language):
                 salary_vacancy['to'])
             number_of_professions += 1
     if number_of_professions != 0:
-        hh_vacancies_by_languages[language] = {
-            'vacancies_found': programmer_vacancies_by_language['found'],
-            'average_salary': average_salary // number_of_professions,
-            'vacancies_processed': number_of_professions}
-        return hh_vacancies_by_languages[language]
+        average_salary_for_profession = average_salary // number_of_professions
+        vacancies_statistic = get_vacancies_statistic(
+            hh_vacancies['found'],
+            average_salary_for_profession,
+            number_of_professions)
+        return vacancies_statistic
 
 
-'''def get_sj_table(languages, sj_title, sj_token):
-    sj_lang = {}
-    sj_table = [
-        ['Язык программирования',
-         'Вакансий найдено',
-         'Вакансий обработано',
-         'Средняя зарплата'],
-    ]
-    for language in languages:
-        sj_lang[language] = get_sj_statistic_of_lang(
-            language,
-            sj_token)
-        sj_table = collect_table(
-            language,
-            sj_table,
-            sj_lang)
-    table_instance = SingleTable(sj_table, sj_title)
-    return table_instance.table'''
-
-
-def get_sj_statistic_of_lang(language, sj_token):
-    sj_vacancies_by_languages = {}
+def get_sj_vacancies(language, page=0):
     headers = {'X-Api-App-Id': sj_token}
     sj_url = 'https://api.superjob.ru/2.0/vacancies'
-    professions_sj_number = 0
-    curuncy = 0
     sj_param = {'catalogues': 48,
                 'town': 4,
                 'keyword': language,
                 'count': 20,
-                'page': 0}
+                'page': page}
+    response = requests.get(sj_url, headers=headers, params=sj_param)
+    response.raise_for_status()
+    super_job = response.json()
+    return super_job
+
+
+def get_sj_statistic_of_lang(language):
+    professions_sj_number = 0
+    curuncy = 0
+    page = 0
     iter_count = count(start=0, step=10)
     for number in iter_count:
-        response = requests.get(sj_url, headers=headers, params=sj_param)
-        response.raise_for_status()
-        super_job = response.json()
-        if super_job['objects']:
-            for vacancy in super_job['objects']:
+        sj_vacancies = get_sj_vacancies(language, page)
+        if sj_vacancies['objects']:
+            for vacancy in sj_vacancies['objects']:
                 if vacancy['currency'] == 'rub':
                     if vacancy['payment_from'] or vacancy['payment_to']:
                         curuncy += predict_rub_salary(
                             vacancy['payment_from'],
                             vacancy['payment_to'])
                         professions_sj_number += 1
-            if not super_job['more']:
+            if not sj_vacancies['more']:
                 break
-            sj_param['page'] += 1
+            page += 1
         if professions_sj_number:
-            sj_vacancies_by_languages[language] = {
-                'vacancies_found': super_job['total'],
-                'average_salary': curuncy // professions_sj_number,
-                'vacancies_processed': professions_sj_number
-            }
-            return sj_vacancies_by_languages[language]
+            average_salary_for_profession = curuncy // professions_sj_number
+            vacancies_statistic = get_vacancies_statistic(
+                sj_vacancies['total'],
+                average_salary_for_profession,
+                professions_sj_number)
+            return vacancies_statistic
 
 
 if __name__ == '__main__':
@@ -172,12 +150,13 @@ if __name__ == '__main__':
     sj_title = 'SuperJob Moscow'
     languages = ['CSS',
                  'JavaScript',
-                 'Java']
-    '''
+                 'Java'
                  'C#',
                  'Ruby',
                  'PHP',
                  'C++',
-                 'Python']'''
+                 'Python']
     print(get_table(languages, hh_title, get_hh_statistic(languages)))
-    print(get_table(languages, sj_title, get_sj_statistic(languages, sj_token)))
+    print(get_table(languages, sj_title, get_sj_statistic(
+        languages,
+        sj_token)))
