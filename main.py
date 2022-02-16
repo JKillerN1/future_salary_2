@@ -59,11 +59,11 @@ def get_sj_statistic(languages, token):
 
 
 def get_vacancies_statistic(vacancies_by_language, average_salary, vacancies_count):
-    hh_vacancies_by_languages = {
+    vacancies_by_languages = {
         'vacancies_found': vacancies_by_language,
         'average_salary': average_salary,
         'vacancies_processed': vacancies_count}
-    return hh_vacancies_by_languages
+    return vacancies_by_languages
 
 
 def get_hh_vacancies(language, page=0):
