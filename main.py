@@ -68,12 +68,12 @@ def get_vacancies_statistic(vacancies_by_language, average_salary, vacancies_cou
 
 def get_hh_vacancies(language, page=0):
     hh_url = 'https://api.hh.ru/vacancies'
-    param = {'specialization': '1.221',
+    hh_params = {'specialization': '1.221',
              'area': '1',
              'text': language,
              'per_page': 100,
              'page': page}
-    response = requests.get(hh_url, params=param)
+    response = requests.get(hh_url, params=hh_params)
     response.raise_for_status()
     programmer_vacancies_by_language = response.json()
     return programmer_vacancies_by_language
@@ -105,12 +105,12 @@ def get_hh_statistic_of_lang(language):
 def get_sj_vacancies(language, page=0):
     headers = {'X-Api-App-Id': sj_token}
     sj_url = 'https://api.superjob.ru/2.0/vacancies'
-    sj_param = {'catalogues': 48,
+    sj_params = {'catalogues': 48,
                 'town': 4,
                 'keyword': language,
                 'count': 20,
                 'page': page}
-    response = requests.get(sj_url, headers=headers, params=sj_param)
+    response = requests.get(sj_url, headers=headers, params=sj_params)
     response.raise_for_status()
     super_job = response.json()
     return super_job
