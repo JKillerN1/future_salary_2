@@ -19,11 +19,12 @@ def collect_table(language, table, vacancies_by_languages):
 
 
 def predict_rub_salary(vacancy_from, vacancy_to):
-    if not vacancy_from:
-        return int(vacancy_to * 0.8)
-    if not vacancy_to:
-        return int(vacancy_from * 1.2)
-    return int((vacancy_from + vacancy_to) / 2)
+    if vacancy_from and vacancy_to:
+        if not vacancy_from:
+            return int(vacancy_to * 0.8)
+        if not vacancy_to:
+            return int(vacancy_from * 1.2)
+        return int((vacancy_from + vacancy_to) / 2)
 
 
 def get_table(languages, title, lang):
