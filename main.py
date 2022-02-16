@@ -93,7 +93,7 @@ def get_hh_statistic_of_lang(language):
                 salary_vacancy['from'],
                 salary_vacancy['to'])
             number_of_professions += 1
-    if number_of_professions != 0:
+    if number_of_professions:
         average_salary_for_profession = average_salary // number_of_professions
         vacancies_statistic = get_vacancies_statistic(
             hh_vacancies['found'],
