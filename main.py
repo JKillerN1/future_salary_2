@@ -1,6 +1,5 @@
 import os
 import requests
-import copy
 
 from dotenv import load_dotenv
 from itertools import count
