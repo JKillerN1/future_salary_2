@@ -7,24 +7,14 @@ from itertools import count
 from terminaltables import SingleTable
 
 
-def collect_table(language, table, vacancies_by_languages):
-    table_copy = copy.copy(table)
-    if vacancies_by_languages[language]:
-        if language in vacancies_by_languages:
-            table_copy.append([
-                language,
-                vacancies_by_languages[language]['vacancies_found'],
-                vacancies_by_languages[language]['vacancies_processed'],
-                vacancies_by_languages[language]['average_salary']])
-    return table_copy
-
-
 def predict_rub_salary(vacancy_from, vacancy_to):
+    if vacancy_from and vacancy_to:
+        return int((vacancy_from + vacancy_to) / 2)
     if not vacancy_from:
         return int(vacancy_to * 0.8)
     if not vacancy_to:
         return int(vacancy_from * 1.2)
-    return int((vacancy_from + vacancy_to) / 2)
+    return 0
 
 
 def get_table(languages, title, lang):
@@ -35,10 +25,13 @@ def get_table(languages, title, lang):
          'Средняя зарплата'],
     ]
     for language in languages:
-        table = collect_table(
-            language,
-            table,
-            lang)
+        if lang[language]:
+            if language in lang:
+                table.append([
+                    language,
+                    lang[language]['vacancies_found'],
+                    lang[language]['vacancies_processed'],
+                    lang[language]['average_salary']])
     table_instance = SingleTable(table, title)
     return table_instance.table
 
@@ -52,11 +45,11 @@ def get_hh_statistic(languages):
 
 
 def get_sj_statistic(languages, token):
-    lang = {}
+    langs = {}
     for language in languages:
-        lang[language] = get_sj_statistic_of_lang(
+        langs[language] = get_sj_statistic_of_lang(
             language)
-    return lang
+    return langs
 
 
 def get_vacancies_statistic(vacancies_by_language, average_salary, vacancies_count):
@@ -120,9 +113,8 @@ def get_sj_vacancies(language, page=0):
 def get_sj_statistic_of_lang(language):
     professions_sj_number = 0
     curuncy = 0
-    page = 0
     for number in count(0, 1):
-        sj_vacancies = get_sj_vacancies(language, page)
+        sj_vacancies = get_sj_vacancies(language, number)
         if not sj_vacancies['objects']:
             continue
         for vacancy in sj_vacancies['objects']:
@@ -134,7 +126,6 @@ def get_sj_statistic_of_lang(language):
                     professions_sj_number += 1
         if not sj_vacancies['more']:
             break
-        page += 1
         if not professions_sj_number:
             continue
         average_salary_for_profession = curuncy // professions_sj_number
