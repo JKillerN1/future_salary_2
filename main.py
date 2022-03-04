@@ -9,38 +9,36 @@ from terminaltables import SingleTable
 def predict_rub_salary(vacancy_from, vacancy_to):
     if vacancy_from and vacancy_to:
         return int((vacancy_from + vacancy_to) / 2)
-    if not vacancy_from:
-        return int(vacancy_to * 0.8)
-    if not vacancy_to:
-        return int(vacancy_from * 1.2)
+    if vacancy_from:
+        return int(vacancy_from * 0.8)
+    if vacancy_to:
+        return int(vacancy_to * 1.2)
     return 0
 
 
-def get_table(languages, title, lang):
+def get_table(languages, title, langs):
     table = [
         ['Язык программирования',
          'Вакансий найдено',
          'Вакансий обработано',
          'Средняя зарплата'],
     ]
-    for language in languages:
-        if lang[language]:
-            if language in lang:
-                table.append([
-                    language,
-                    lang[language]['vacancies_found'],
-                    lang[language]['vacancies_processed'],
-                    lang[language]['average_salary']])
+    for lang, values in langs.items():
+        if values:
+            table.append([lang,
+                values['vacancies_found'],
+                values['vacancies_processed'],
+                values['average_salary']])
     table_instance = SingleTable(table, title)
     return table_instance.table
 
 
 def get_hh_statistic(languages):
-    lang = {}
+    langs = {}
     for language in languages:
-        lang[language] = get_hh_statistic_of_lang(
+        langs[language] = get_hh_statistic_of_lang(
             language)
-    return lang
+    return langs
 
 
 def get_sj_statistic(languages, token):
